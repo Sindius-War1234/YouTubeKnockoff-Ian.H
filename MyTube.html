@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Knockoff - Made By Ian.H</title>
+  <style>
+    /* Basic styling */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #181818;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    
+    /* Header styling */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: #202020;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      color: #ff0000;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+    }
+    .search-bar input {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      width: 400px;
+    }
+    .search-bar button {
+      padding: 8px;
+      background-color: #ff0000;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+    .notification-bell {
+      cursor: pointer;
+      position: relative;
+      margin-right: 15px;
+    }
+    .notification-bell span {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: red;
+      color: #fff;
+      border-radius: 50%;
+      padding: 4px 6px;
+      font-size: 12px;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+    .avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: #666;
+    }
+
+    /* Profile dropdown menu styling */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: #333;
+      border-radius: 5px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      z-index: 1000;
+    }
+    .dropdown-menu.active {
+      display: block;
+    }
+    .dropdown-menu button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: transparent;
+      border: none;
+      text-align: left;
+      color: #fff;
+      cursor: pointer;
+    }
+    .dropdown-menu button:hover {
+      background-color: #555;
+    }
+
+    /* Main layout */
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+      gap: 20px;
+    }
+
+    /* Video Player */
+    .video-player {
+      flex: 3;
+      background-color: #333;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .video-placeholder {
+      width: 100%;
+      height: 400px;
+      background: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #aaa;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .controls button {
+      background-color: #555;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Video Info */
+    .video-info h2 {
+      margin: 5px 0;
+      font-size: 1.3rem;
+    }
+    .video-stats {
+      display: flex;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    /* Suggested videos */
+    .suggested-videos {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .suggested-video {
+      display: flex;
+      gap: 10px;
+      padding: 5px;
+      background-color: #202020;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .suggested-thumbnail {
+      width: 100px;
+      height: 60px;
+      background-color: #333;
+    }
+    .suggested-info h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    /* Comments */
+    .comments {
+      margin-top: 20px;
+    }
+    .comments h3 {
+      font-size: 1.2rem;
+    }
+    .comment-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .comment-input {
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">YouTube</div>
+    <div class="search-bar">
+      <input type="text" placeholder="Search...">
+      <button>Search</button>
+    </div>
+    <div class="notification-bell" onclick="showNotification()">🔔<span>3</span></div>
+    <div class="profile" onclick="toggleDropdown()">
+      <div class="avatar"></div>
+      <span>Sindius_War1234</span>
+      <!-- Profile Dropdown Menu -->
+      <div class="dropdown-menu" id="profileDropdown">
+        <button onclick="viewProfile()">View Profile</button>
+        <button onclick="openSettings()">Settings</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container -->
+  <div class="container">
+    <!-- Video Player Section -->
+    <div class="video-player">
+      <div class="video-placeholder" id="videoPlayer">Playing Video...</div>
+      <div class="controls">
+        <button onclick="togglePlay()">▶️ Play/Pause</button>
+        <button onclick="mute()">🔇 Mute</button>
+      </div>
+
+      <!-- Video Info -->
+      <div class="video-info">
+        <h2 id="videoTitle">Learn JavaScript in 10 Minutes</h2>
+        <div class="video-stats">
+          <span id="viewCount">1,234,567 views</span>
+          <span>•</span>
+          <span id="uploadDate">Uploaded 2 days ago</span>
+        </div>
+      </div>
+
+      <!-- Like, Dislike, Share, Save, Subscribe Buttons -->
+      <div class="controls">
+        <button onclick="like()">👍 Like <span id="likeCount">120</span></button>
+        <button onclick="dislike()">👎 Dislike <span id="dislikeCount">10</span></button>
+        <button onclick="subscribe()">🔴 Subscribe</button>
+        <button onclick="share()">🔗 Share</button>
+        <button onclick="save()">💾 Save</button>
+		<button onclick="download()">§ Download</button>
+      </div>
+
+      <!-- Comments Section -->
+      <div class="comments">
+        <h3>Comments</h3>
+        <div class="comment-box">
+          <input type="text" class="comment-input" placeholder="Add a comment...">
+          <button onclick="addComment()">Post Comment</button>
+        </div>
+        <div id="commentsList">
+          <!-- Comments will be appended here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggested Videos Section -->
+    <div class="suggested-videos">
+      <h3>Suggested Videos</h3>
+      <div class="suggested-video" onclick="loadVideo('Learn React in 30 Minutes', '567,891 views', 'Uploaded 1 week ago')">
+        <div class="suggested-thumbnail"></div>
+        <div class="suggested-info">
+          <h4>Learn React in 30 Minutes</h4>
+        </div>
+      </div>
+      <div class="suggested-video" onclick="loadVideo('CSS Crash Course', '789,012 views', 'Uploaded 3 days ago')">
+        <div class="suggested-thumbnail"></div>
+        <div class="suggested-info">
+          <h4>CSS Crash Course</h4>
+        </div>
+      </div>
+      <div class="suggested-video" onclick="loadVideo('Python Basics for Beginners', '999,321 views', 'Uploaded 5 days ago')">
+        <div class="suggested-thumbnail"></div>
+        <div class="suggested-info">
+          <h4>Python Basics for Beginners</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for interactivity -->
+  <script>
+    let likeCount = 120;
+    let dislikeCount = 10;
+    let isPlaying = false;
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      document.getElementById("videoPlayer").innerText = isPlaying ? "Playing Video..." : "Video Paused";
+    }
+
+    function mute() {
+      document.getElementById("videoPlayer").innerText = "Video Muted";
+    }
+
+    function like() {
+      document.getElementById("likeCount").innerText = ++likeCount;
+    }
+
+    function dislike() {
+      document.getElementById("dislikeCount").innerText = ++dislikeCount;
+    }
+
+    function subscribe() {
+      alert("Thank you for subscribing!");
+    }
+
+    function share() {
+      alert("Video link copied to clipboard.");
+    }
+
+    function save() {
+      alert("Video saved to your playlist.");
+    }
+	
+	function download() {
+	  alert("Video has been downloaded to your desktop!");
+	}
+
+    function showNotification() {
+      alert("You have 3 new notifications.");
+    }
+
+    function addComment() {
+      const commentInput = document.querySelector(".comment-input");
+      const commentText = commentInput.value.trim();
+      if (commentText) {
+        const comment = document.createElement("p");
+        comment.innerText = commentText;
+        document.getElementById("commentsList").appendChild(comment);
+        commentInput.value = "";
+      }
+    }
+
+    // Function to load a new video
+    function loadVideo(title, views, uploadDate) {
+      document.getElementById("videoTitle").innerText = title;
+      document.getElementById("viewCount").innerText = views;
+      document.getElementById("uploadDate").innerText = uploadDate;
+      document.getElementById("videoPlayer").innerText = "Now Playing: " + title;
+    }
+
+    // Profile dropdown functions
+    function toggleDropdown() {
+      document.getElementById("profileDropdown").classList.toggle("active");
+    }
+
+    function viewProfile() {
+      alert("Opening your profile...");
+    }
+
+    function openSettings() {
+      alert("Opening settings...");
+    }
+
+    function logout() {
+      alert("Logging out...");
+    }
+
+    // Close dropdown if clicked outside
+    window.onclick = function(event) {
+      if (!event.target.matches('.profile')) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown.classList.contains('active')) {
+          dropdown.classList.remove('active');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
